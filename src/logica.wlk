@@ -8,7 +8,7 @@ object nave{
         if(vida == 0) juego.terminar()
     }
     method disparar(){
-       var a = new BalaNave(position = nave.position().up(1))
+       var a = new BalaNave(position = nave.position().up(1).right(2))
        game.addVisual(a)
        a.moverse()
     }
@@ -25,8 +25,10 @@ class BalaNave{
    	method image() = "img/bala-removebg-preview.png"
     method moverse(){
         game.onTick(10,"bala se mueve",{position = position.up(1)})
-        game.onCollideDo(self,{unInvasor =>unInvasor.desaparecer()})
-        game.onCollideDo(self, {game.removeVisual(self)})
+        game.onCollideDo(self,{unInvasor =>
+        	unInvasor.desaparecer()
+        	game.removeVisual(self)
+        })
     }
      method crear(){
         game.addVisual(self)
@@ -69,10 +71,10 @@ class Invasor{
     }
     method crear(){
         /*game.addVisual()*/
-        game.onTick(3000,"invaderDispara",{balaInvader=>BalaInvader.crear()})
+        game.onTick(3000,"invaderDispara",{new BalaInvader().crear()})
     }
     method desaparecer(){
-        game.onCollideDo(self,{game.removeVisual(self)})
+       game.removeVisual(self)
     }
     method image() = color.imagen()
     
@@ -88,9 +90,9 @@ class Color {
 
 object juego{
     method iniciar(){
-        game.width(100)
-	    game.height(100)
-	    game.cellSize(50)
+        game.width(50)
+	    game.height(50)
+	    game.cellSize(40)
 	    game.title("Space Invaders")
 	    game.addVisualCharacter(nave)
 	    
