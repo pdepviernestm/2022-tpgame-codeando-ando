@@ -8,18 +8,23 @@ object nave{
         if(vida == 0) juego.terminar()
     }
     method disparar(){
-       balaNave.crear()
+       var a = new BalaNave(position = nave.position().up(1))
+       game.addVisual(a)
+       a.moverse()
     }
+    
+    method image() = "img/naveEspacial.png"
 
 }
 class Bala{
     var property position 
-    var imagen = "img/bala-removebg-preview.png"
+   	method image() = "img/bala-removebg-preview.png"
 }
-object balaNave inherits Bala(position = nave.position()) {
-  
+class BalaNave{
+  	var property position 
+   	method image() = "img/bala-removebg-preview.png"
     method moverse(){
-        game.onTick(1000,"bala se mueve",{position.up(1)})
+        game.onTick(10,"bala se mueve",{position = position.up(1)})
         game.onCollideDo(self,{unInvasor =>unInvasor.desaparecer()})
         game.onCollideDo(self, {game.removeVisual(self)})
     }
@@ -27,10 +32,12 @@ object balaNave inherits Bala(position = nave.position()) {
         game.addVisual(self)
         self.moverse()
     }  
+    
 }
 
-object balaInvader inherits Bala(position=game.at(25,25)){
-    
+class BalaInvader{
+    var property position 
+   	method image() = "img/bala-removebg-preview.png"
     method moverse(){
         game.onTick(1000,"bala se mueve",{position.down(1)})
         game.onCollideDo(self,{nave => nave.perderVida()})
@@ -43,9 +50,9 @@ object balaInvader inherits Bala(position=game.at(25,25)){
 }
 
 class Invasor{
-	var color 
+	var color  
+    var property position
 	var vida = color.vida()
-    var position
    
     method recibirGolpe(){
         vida-- 
@@ -61,28 +68,32 @@ class Invasor{
         position = position.left(5)
     }
     method crear(){
-        game.addVisual(color)
-        game.onTick(3000,"invaderDispara",{balaInvader=>balaInvader.crear()})
+        /*game.addVisual()*/
+        game.onTick(3000,"invaderDispara",{balaInvader=>BalaInvader.crear()})
     }
+    method desaparecer(){
+        game.onCollideDo(self,{game.removeVisual(self)})
+    }
+    method image() = color.imagen()
+    
+   
 }
 
 class Color {
-    var property vida
-    var property imagen 
-}
-object invasor{
-    method desaparecer(){
-        game.removeVisual(self)
-    }
+    var property vida 
+    var property position
+    var property imagen
+    method image() = imagen
 }
 
 object juego{
     method iniciar(){
-        game.width(200)
-	    game.height(200)
-	    game.cellSize(5)
+        game.width(100)
+	    game.height(100)
+	    game.cellSize(50)
 	    game.title("Space Invaders")
-	    game.addVisual(nave)
+	    game.addVisualCharacter(nave)
+	    
         self.agregarInvasores()
         
         keyboard.space().onPressDo({nave.disparar()})
@@ -90,10 +101,10 @@ object juego{
     
 
     method agregarInvasores(){
-		const negro = new Color(vida = 1, imagen = "img/invaderNegro.png")
-		const azul = new Color(vida = 2, imagen = "img/invaderCeleste.png")
-        game.onTick(2000,"agregar invasor azul",{new Invasor(position = game.at(0.randomUpTo(game.width()),30.randomUpTo(game.height())),color=azul).crear()})
-        game.onTick(2000,"agregar invasor negro",{new Invasor(position = game.at(0.randomUpTo(game.width()),30.randomUpTo(game.height())),color=negro).crear()})     
+        game.onTick(2000,"agregar invasor azul",{game.addVisual(new Invasor(position = game.at(0.randomUpTo(game.width()),40.randomUpTo(game.height())),color=azul))})
+        game.onTick(2000,"agregar invasor negro",{game.addVisual(new Invasor(position = game.at(0.randomUpTo(game.width()),40.randomUpTo(game.height())),color=negro))})
+		game.schedule(15000,{game.removeTickEvent("agregar invasor azul")})
+		game.schedule(15000,{game.removeTickEvent("agregar invasor negro")})
 	}	
 
     method terminar(){
@@ -109,4 +120,12 @@ object juego{
     }
     
 }
+const negro = new Color(vida = 1, imagen = "img/invaderNegro.png", position = game.center())
+const azul = new Color(vida = 2, imagen = "img/invaderCeleste.png" , position = game.center())
+
+
+
+
+
+
 
