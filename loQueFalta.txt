@@ -1,3 +1,4 @@
 . Que los invaders disparen
 . Hacer que desaparezca la bala cunado llega arriba del todo
 . Crear score y vida de la nave
+. Cuando mato un invader, que deje de disparar
