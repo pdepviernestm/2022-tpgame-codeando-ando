@@ -1,4 +1,7 @@
-. Crear score y vida de la nave
-. las balas no desaparecen
+. Imrpimir score por pantalla
+. pantalla inicio
+. agregar sonido
+
+
 
 Hola profe, estabamos haciendo el tpgame y tenemos la siguiente duda. Cuando una bala
