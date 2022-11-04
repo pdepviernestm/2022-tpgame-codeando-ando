@@ -2,8 +2,9 @@ import wollok.game.*
 import logica.*
 program space {
 
-	juego.iniciar()
+	juego.confInicial()
 	game.start()
+	juego.iniciar()
 
 	
 }

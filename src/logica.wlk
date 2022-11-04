@@ -146,7 +146,7 @@ object fondoInicial{
 object juego{
     const intro = game.sound("img/starWars.mp3")
     const jueguito = game.sound("img/juego.mp3")
-    method iniciar(){
+    method confInicial(){
         game.width(50)
 	    game.height(50)
 	    game.cellSize(40)
@@ -154,14 +154,17 @@ object juego{
 	    game.boardGround("img/pondo.png")
         game.addVisual(fondoInicial)
         game.addVisual(start)
-        keyboard.enter().onPressDo({game.clear() self.empezar()})
+    }
+    method iniciar(){
+    	intro.paly()
+    	keyboard.enter().onPressDo({game.clear() intro.stop() self.empezar()})
     }
     method empezar(){
-        intro.play()
-        intro.volume(0.2)
+        jueguito.play()
+        jueguito.volume(0.2)
 	    game.addVisualCharacter(nave)
 	    contador.crearVisual()
-	    score.imprimirPuntaje()
+	    score.primeraVez()
         self.agregarInvasores()
         
         keyboard.space().onPressDo({nave.disparar(new BalaNave(position = nave.position().up(1).right(2)))})
@@ -182,59 +185,72 @@ object juego{
     method terminar(){
         game.clear()
         game.addVisual(nave)
-        game.say(nave, "Fuimos derrotados por nuestros invasores")
+        game.addVisual(perder)
     }
     method ganar(){
         game.clear()
         game.addVisual(nave)
-        game.say(nave, "GANAMOS")
-
+        game.addVisual(ganar)
     }
     
 }
+
+
+object ganar{
+	var property position = game.center()
+	method image() = "img/ganamos.png"
+}
+object perder{
+	var property position = game.center()
+	method image() = "img/perdimos.png"
+}
+
 const negro = new Color(vida = 1, imagen = "img/invaderNegro.png", position = game.center())
 const azul = new Color(vida = 2, imagen = "img/invaderCeleste.png" , position = game.center())
 
 
 
 object score{
-    var puntaje = [0,0,0]
-    var n = 30
-    var eliminada 
-    
-    method imprimirPuntaje(){
-        puntaje.forEach{valor => self.dibujar(valor)}
-    }
-    method dibujar(objeto){
-        game.addVisual(convertirNumero.getNumberImage(objeto,game.at(1,n)))
-        n -= 5
-    }
+	var unidad = new Visual(position = game.at(1,20))
+	var decena = new Visual(position = game.at(1,25))
+	var centena = new Visual(position = game.at(1,30))
+
     method sumarPunto(){
-        if(puntaje.get(1) == 9){
-            puntaje = [1,0,0]
-            self.imprimirPuntaje()
-            juego.ganar()
-        }
-        var nuevoScore = [puntaje.head(),puntaje.get(1)+1,puntaje.last()]
-        puntaje = nuevoScore
-        eliminada  = puntaje.get(1)
-        self.imprimirPuntaje()
+    	game.removeVisual(unidad)
+    	game.removeVisual(decena)
+    	game.removeVisual(centena)
+    	decena.number(decena.number()+1)
+    	if(decena.number() == 10){
+    		juego.ganar()
+    		decena.number(0)
+    		centena.number(1)
+    	}
+    	game.addVisual(unidad)
+    	game.addVisual(decena)
+		game.addVisual(centena)
+    }
+    
+    
+    method primeraVez(){
+    	game.addVisual(unidad)
+    	game.addVisual(decena)
+		game.addVisual(centena)
     }
     
 }
 
-object convertirNumero{
-    var property aEliminar
-    var property coleccionAEliminar=[]
-    method getNumberImage(number, posicion){
-        aEliminar = new Visual(imagen= "img/numeros/num" + number + ".png", position = posicion)
-        coleccionAEliminar.add(aEliminar)
-    	return aEliminar
-    }
-}
+//object convertirNumero{
+//    var property aEliminar
+//    var property coleccionAEliminar=[]
+//    method getNumberImage(number, posicion){
+//        aEliminar = new Visual(imagen= "img/numeros/num" + number + ".png", position = posicion)
+//        coleccionAEliminar.add(aEliminar)
+//    	return aEliminar
+//    }
+//}
 
 class Visual{
     var property position
-    var property imagen
-    method image() = imagen
+    var property number = 0
+    method image() = "img/numeros/num" + number + ".png"
 }
