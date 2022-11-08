@@ -146,6 +146,8 @@ object fondoInicial{
 object juego{
     const intro = game.sound("img/starWars.mp3")
     const jueguito = game.sound("img/juego.mp3")
+    const ganamosSound = game.sound("img/ganar.mp3")
+    const perderSound = game.sound("img/perder.mp3")
     method confInicial(){
         game.width(50)
 	    game.height(50)
@@ -154,6 +156,7 @@ object juego{
 	    game.boardGround("img/pondo.png")
         game.addVisual(fondoInicial)
         game.addVisual(start)
+        keyboard.enter().onPressDo({game.clear() self.empezar()})
     }
     method iniciar(){
     	intro.paly()
@@ -186,22 +189,26 @@ object juego{
         game.clear()
         game.addVisual(nave)
         game.addVisual(perder)
+        jueguito.stop()
+        perderSound.play()
     }
     method ganar(){
         game.clear()
         game.addVisual(nave)
         game.addVisual(ganar)
+        jueguito.stop()
+        ganamosSound.play()
     }
     
 }
 
 
 object ganar{
-	var property position = game.center()
+	var property position = game.at(2,20)
 	method image() = "img/ganamos.png"
 }
 object perder{
-	var property position = game.center()
+	var property position = game.at(2,20)
 	method image() = "img/perdimos.png"
 }
 
