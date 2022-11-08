@@ -1,23 +1,21 @@
 import wollok.game.*
+
 object nave{
     var vida = 3
     var property position = game.at(25,5)
     
     method perderVida(){
         vida -= 1
-        if(vida == 0) juego.terminar()
-        contador.disminuir()
+        if(vida == 0) {juego.terminar()}else{contador.disminuir()}        
     }
     method disparar(a){
-       //var a = new BalaNave(position = self.position().up(1).right(2))
        game.addVisual(a)
        a.moverse()
     }
     method recibirGolpeBalaInvader(bala){
         self.perderVida()
-        game.removeTickEvent("balaNave se mueve")
-        game.removeVisual(bala)}
-    
+        if(game.hasVisual(bala)){game.removeVisual(bala)}
+    }
     
     method image() = "img/naveEspacial.png"
 
@@ -35,10 +33,13 @@ object contador{
 	const listaCorazones = [corazon1, corazon2, corazon3]
 	var contadorVida = 3
 	method disminuir(){
+		if(listaCorazones.size() != 0){
         contadorVida --
         game.removeVisual(listaCorazones.last())
 		listaCorazones.remove(listaCorazones.last())
 	}
+	}
+	
 	method crearVisual(){
 		listaCorazones.forEach({unCorazon => game.addVisual(unCorazon)})
 	}
@@ -50,7 +51,7 @@ object contador{
 
 class Bala{
     var property position 
-   	method image() = "img/bala-removebg-preview.png"
+   	method image() 
     method moverse()
      method crear(){
         game.addVisual(self)
@@ -60,35 +61,34 @@ class Bala{
 class BalaNave inherits Bala{
     override method moverse(){
         game.onTick(10,"balaNave se mueve",{position = position.up(1)
-        if(position.y() >= game.height()){game.removeVisual(self)
+        if(position.y() >= game.height() && game.hasVisual(self)){game.removeVisual(self)
         		game.removeTickEvent("balaNave se mueve")
         	}
         })
         game.onCollideDo(self,{algo =>
         	algo.recibirGolpeBalaNave(self)
-        	// if(game.hasVisual(self)){game.removeVisual(self)
-            // game.removeTickEvent("balaNave se mueve")}
         		 
         })
     }
+    override method image() = "img/balaNave.png"
     
     method perderVida(){}
     method recibirGolpeBalaInvader(bala){}
     method recibirGolpeBalaNave(bala){}
-    //method recibirGolpe(){}
     
 }
 
 class BalaInvader inherits Bala{
     override method moverse(){
         game.onTick(700,"balaInvader se mueve",{position = position.down(1)
-        if(position.y() <= 0){game.removeVisual(self)}
+        if(position.y() <= 0 && game.hasVisual(self)){game.removeVisual(self)}
         })
         game.onCollideDo(self,{algo =>
         	algo.recibirGolpeBalaInvader(self)
-        	//if(game.hasVisual(self)){game.removeVisual(self)}
         })
     }
+    
+    override method image() = "img/balaInvader.png"
     method recibirGolpeBalaNave(alguien){}
     method recibirGolpeBalaInvader(alguien){}
 }
@@ -99,12 +99,10 @@ class Invasor{
 	var vida = color.vida()
    
     method recibirGolpe(){
-        score.sumarPunto()
         vida-- 
         if(vida == 0){self.desaparecer()}
     }
     method crear(posicion){
-        /*game.addVisual()*/
         
         game.onTick(3000,"invaderDispara",{new BalaInvader(position = posicion.down(1)).crear()
         									if(vida == 0){game.removeTickEvent("invaderDispara")}
@@ -121,13 +119,13 @@ class Invasor{
     method recibirGolpeBalaInvader(unaBalaNave){}
     method perderVida(){}
     method desaparecer(){
-       game.removeVisual(self)
+       if(game.hasVisual(self)){game.removeVisual(self) score.sumarPunto()}
     }
     method image() = color.imagen()
 }
 
 object start{
-    var property position = game.at(20,5)
+    var property position = game.at(13,5)
     method image() = "img/start.png"
 }
 
@@ -159,7 +157,7 @@ object juego{
         keyboard.enter().onPressDo({game.clear() self.empezar()})
     }
     method iniciar(){
-    	intro.paly()
+    	intro.play()
     	keyboard.enter().onPressDo({game.clear() intro.stop() self.empezar()})
     }
     method empezar(){
@@ -170,7 +168,7 @@ object juego{
 	    score.primeraVez()
         self.agregarInvasores()
         
-        keyboard.space().onPressDo({nave.disparar(new BalaNave(position = nave.position().up(1).right(2)))})
+        keyboard.space().onPressDo({nave.disparar(new BalaNave(position = nave.position().up(1)))})
     }
     
 
@@ -218,9 +216,9 @@ const azul = new Color(vida = 2, imagen = "img/invaderCeleste.png" , position = 
 
 
 object score{
-	var unidad = new Visual(position = game.at(1,20))
-	var decena = new Visual(position = game.at(1,25))
-	var centena = new Visual(position = game.at(1,30))
+	const unidad = new Visual(position = game.at(1,20))
+	const decena = new Visual(position = game.at(1,25))
+	const centena = new Visual(position = game.at(1,30))
 
     method sumarPunto(){
     	game.removeVisual(unidad)
@@ -246,15 +244,6 @@ object score{
     
 }
 
-//object convertirNumero{
-//    var property aEliminar
-//    var property coleccionAEliminar=[]
-//    method getNumberImage(number, posicion){
-//        aEliminar = new Visual(imagen= "img/numeros/num" + number + ".png", position = posicion)
-//        coleccionAEliminar.add(aEliminar)
-//    	return aEliminar
-//    }
-//}
 
 class Visual{
     var property position

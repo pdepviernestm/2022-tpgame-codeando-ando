@@ -4,4 +4,4 @@ program space {
 	juego.confInicial()
 	game.start()
 
-}
+} 
