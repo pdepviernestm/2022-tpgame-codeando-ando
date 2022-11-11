@@ -173,8 +173,8 @@ object juego{
     
 
     method agregarInvasores(){
-        game.onTick(2000,"agregar invasores",{self.nuevoInvasor(new Invasor(position = game.at(3.randomUpTo(game.width()),40.randomUpTo(game.height())),color=azul))
-                                              self.nuevoInvasor(new Invasor(position = game.at(3.randomUpTo(game.width()),40.randomUpTo(game.height())),color=negro))})
+        game.onTick(2000,"agregar invasores",{self.nuevoInvasor(new Invasor(position = game.at(3.randomUpTo(game.width()),40.randomUpTo(game.height())),color=rojo))
+                                              self.nuevoInvasor(new Invasor(position = game.at(3.randomUpTo(game.width()),40.randomUpTo(game.height())),color=rosa))})
 		game.schedule(15000,{game.removeTickEvent("agregar invasores")})
 	}	
 	
@@ -210,8 +210,8 @@ object perder{
 	method image() = "img/perdimos.png"
 }
 
-const negro = new Color(vida = 1, imagen = "img/invaderNegro.png", position = game.center())
-const azul = new Color(vida = 2, imagen = "img/invaderCeleste.png" , position = game.center())
+const rosa = new Color(vida = 1, imagen = "img/invaderRosa.png", position = game.center())
+const rojo = new Color(vida = 2, imagen = "img/invaderRojo.png" , position = game.center())
 
 
 
